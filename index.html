@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Калькулятор макета</title>
+    <script type="importmap">
+        {
+          "imports": {
+            "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+          }
+        }
+    </script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp,container-queries"></script>
+
+</head>
+<body class="bg-white dark:bg-gray-900">
+<div id="app" class="w-full flex items-center justify-center">
+    <div class="container flex items-center justify-center flex-col gap-3 p-5">
+        <div class="max-w-md p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-full">
+            <a href="#">
+                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Screen {{ currentScreenWidth }}px</h5>
+            </a>
+            <div class="mb-3 font-normal text-gray-700 dark:text-gray-400 flex flex-col gap-3">
+                <div class="flex">
+                    <select v-model="selectedScreenWidth" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-none rounded-s-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                        <option v-for="key in Object.keys(selectedOptions)" :value="key">{{ selectedOptions[key] }}</option>
+                    </select>
+                    <div class="flex">
+                        <button @click.prevent="selectedScreenWidth = '1400'" class="inline-flex items-center px-3 h-full text-sm font-medium hover:text-white hover:fill-white border hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:hover:bg-blue-700 dark:focus:ring-blue-800" :disabled="selectedScreenWidth === '1400'" :class="selectedScreenWidth === '1400' ? 'text-white bg-blue-700 border-blue-700 dark:bg-blue-600 fill-white' : 'fill-gray-900 text-gray-900 bg-gray-200 border-gray-300 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600'">
+                            <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M64 0C28.7 0 0 28.7 0 64L0 352c0 35.3 28.7 64 64 64l176 0-10.7 32L160 448c-17.7 0-32 14.3-32 32s14.3 32 32 32l256 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-69.3 0L336 416l176 0c35.3 0 64-28.7 64-64l0-288c0-35.3-28.7-64-64-64L64 0zM512 64l0 224L64 288 64 64l448 0z"/></svg>                        </button>
+                    </div>
+                    <div class="flex">
+                        <button @click.prevent="selectedScreenWidth = '320'" class="inline-flex items-center px-3 h-full text-sm font-medium hover:text-white hover:fill-white rounded-e-lg border hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:hover:bg-blue-700 dark:focus:ring-blue-800" :disabled="selectedScreenWidth === '320'" :class="selectedScreenWidth === '320' ? 'text-white bg-blue-700 border-blue-700 dark:bg-blue-600 fill-white' : 'fill-gray-900 text-gray-900 bg-gray-200 border-gray-300 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600'">
+                            <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M16 64C16 28.7 44.7 0 80 0L304 0c35.3 0 64 28.7 64 64l0 384c0 35.3-28.7 64-64 64L80 512c-35.3 0-64-28.7-64-64L16 64zM144 448c0 8.8 7.2 16 16 16l64 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-64 0c-8.8 0-16 7.2-16 16zM304 64L80 64l0 320 224 0 0-320z"/></svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex" v-if="selectedScreenWidth === '-1'">
+                    <input v-model="inputScreenWidth" type="number" :min="minSize" :max="maxSize" class="rounded-none rounded-s-lg bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="">
+                    <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border rounded-s-0 border-gray-300 border-s-0 rounded-e-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">px</span>
+                </div>
+            </div>
+            <label class="inline-flex items-center mb-5 cursor-pointer">
+                <input type="checkbox" v-model="isCopyVW" class="sr-only peer">
+                <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:w-5 after:h-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Add vw when copying</span>
+            </label>
+        </div>
+
+        <div class="max-w-md p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-full">
+            <div class="mb-3 font-normal text-gray-700 dark:text-gray-400 flex flex-row gap-3">
+                <div class="flex w-1/3">
+                    <input v-model="inputSize" type="text" class="rounded-none rounded-s-lg bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="">
+                    <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border rounded-s-0 border-gray-300 border-s-0 rounded-e-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">px</span>
+                </div>
+
+                <div class="flex w-2/3">
+                    <span v-if="selectedScreenWidth === '320' || selectedScreenWidth === '1400'" class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border rounded-none rounded-s-lg border-gray-300 border-s-0 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+                        <svg v-if="selectedScreenWidth === '1400'" class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M64 0C28.7 0 0 28.7 0 64L0 352c0 35.3 28.7 64 64 64l176 0-10.7 32L160 448c-17.7 0-32 14.3-32 32s14.3 32 32 32l256 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-69.3 0L336 416l176 0c35.3 0 64-28.7 64-64l0-288c0-35.3-28.7-64-64-64L64 0zM512 64l0 224L64 288 64 64l448 0z"/></svg>
+                        <svg v-if="selectedScreenWidth === '320'" class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M16 64C16 28.7 44.7 0 80 0L304 0c35.3 0 64 28.7 64 64l0 384c0 35.3-28.7 64-64 64L80 512c-35.3 0-64-28.7-64-64L16 64zM144 448c0 8.8 7.2 16 16 16l64 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-64 0c-8.8 0-16 7.2-16 16zM304 64L80 64l0 320 224 0 0-320z"/></svg>
+                    </span>
+                    <input v-model="resultSize" disabled class="rounded-none bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" :class="selectedScreenWidth === '320' || selectedScreenWidth === '1400' ? 'border-l-0' : 'rounded-s-lg'" placeholder="">
+                    <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border rounded-s-0 border-gray-300 border-s-0 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600" :class="canSaved || resultSize ? '' : 'rounded-e-md'">vw</span>
+                    <button v-if="resultSize" @click.prevent="copy(resultSize)" class="inline-flex items-center px-3 h-full text-sm font-medium text-white bg-gray-700 border border-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800" :class="canSaved ? '' : 'rounded-e-lg'">
+                        <svg class="h-4 w-4 fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z"/></svg>
+                    </button>
+                    <button v-if="canSaved" @click.prevent="save" class="inline-flex items-center px-3 h-full text-sm font-medium text-white bg-blue-700 rounded-e-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                        <svg class="h-4 w-4 fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M48 96l0 320c0 8.8 7.2 16 16 16l320 0c8.8 0 16-7.2 16-16l0-245.5c0-4.2-1.7-8.3-4.7-11.3l33.9-33.9c12 12 18.7 28.3 18.7 45.3L448 416c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 96C0 60.7 28.7 32 64 32l245.5 0c17 0 33.3 6.7 45.3 18.7l74.5 74.5-33.9 33.9L320.8 84.7c-.3-.3-.5-.5-.8-.8L320 184c0 13.3-10.7 24-24 24l-192 0c-13.3 0-24-10.7-24-24L80 80 64 80c-8.8 0-16 7.2-16 16zm80-16l0 80 144 0 0-80L128 80zm32 240a64 64 0 1 1 128 0 64 64 0 1 1 -128 0z"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="mb-3 font-normal text-gray-700 dark:text-gray-400 flex flex-row justify-end gap-3" v-if="resultDesktop && selectedScreenWidth !== '1400'">
+                <div class="flex w-1/3"></div>
+                <div class="flex w-2/3">
+                    <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border rounded-none border-r-0 rounded-s-lg border-gray-300 border-s-0 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600" :class="canSaved || resultSize ? '' : 'rounded-e-md'">
+                        <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M64 0C28.7 0 0 28.7 0 64L0 352c0 35.3 28.7 64 64 64l176 0-10.7 32L160 448c-17.7 0-32 14.3-32 32s14.3 32 32 32l256 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-69.3 0L336 416l176 0c35.3 0 64-28.7 64-64l0-288c0-35.3-28.7-64-64-64L64 0zM512 64l0 224L64 288 64 64l448 0z"/></svg>
+                    </span>
+                    <input v-model="resultDesktop" disabled class="rounded-none bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="">
+                    <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border rounded-s-0 border-gray-300 border-s-0 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600" :class="canSaved || resultSize ? '' : 'rounded-e-md'">vw</span>
+                    <button @click.prevent="copy(resultDesktop)" :class="canSaved ? 'mr-10' : ''" class="inline-flex items-center px-3 h-full text-sm font-medium text-white bg-gray-700 border border-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800 rounded-e-lg">
+                        <svg class="h-4 w-4 fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="mb-3 font-normal text-gray-700 dark:text-gray-400 flex flex-row justify-end gap-3" v-if="resultMobile && selectedScreenWidth !== '320'">
+                <div class="flex w-1/3"></div>
+                <div class="flex w-2/3">
+                    <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border rounded-none border-r-0 rounded-s-lg border-gray-300 border-s-0 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600" :class="canSaved || resultSize ? '' : 'rounded-e-md'">
+                        <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M16 64C16 28.7 44.7 0 80 0L304 0c35.3 0 64 28.7 64 64l0 384c0 35.3-28.7 64-64 64L80 512c-35.3 0-64-28.7-64-64L16 64zM144 448c0 8.8 7.2 16 16 16l64 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-64 0c-8.8 0-16 7.2-16 16zM304 64L80 64l0 320 224 0 0-320z"/></svg>
+                    </span>
+                    <input v-model="resultMobile" disabled class="rounded-none bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="">
+                    <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border rounded-s-0 border-gray-300 border-s-0 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600" :class="canSaved || resultSize ? '' : 'rounded-e-md'">vw</span>
+                    <button @click.prevent="copy(resultMobile)" :class="canSaved ? 'mr-10' : ''" class="inline-flex items-center px-3 h-full text-sm font-medium text-white bg-gray-700 border border-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800 rounded-e-lg">
+                        <svg class="h-4 w-4 fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div v-for="size in Object.keys(settings[selectedScreenWidth] ?? {})" class="max-w-md p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-full">
+            <div class="mb-3 font-normal text-gray-700 dark:text-gray-400 flex flex-row gap-3">
+                <div class="flex w-1/3">
+                    <input :value="size" disabled class="rounded-none rounded-s-lg bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="">
+                    <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border rounded-s-0 border-gray-300 border-s-0 rounded-e-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">px</span>
+                </div>
+
+                <div class="flex w-2/3">
+                    <input :value="settings[selectedScreenWidth][size]" disabled class="rounded-none rounded-s-lg bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="">
+                    <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border rounded-s-0 border-gray-300 border-s-0 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">vw</span>
+                    <button @click.prevent="copy(settings[selectedScreenWidth][size])" class="inline-flex items-center px-3 h-full text-sm font-medium text-white bg-gray-700 border border-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
+                        <svg class="h-4 w-4 fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z"/></svg>
+                    </button>
+                    <button @click.prevent="deleteSetting(size)" class="inline-flex items-center px-3 h-full text-sm font-medium text-white bg-red-700 rounded-e-lg border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
+                        <svg class="h-4 w-4 fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M135.2 17.7L128 32 32 32C14.3 32 0 46.3 0 64S14.3 96 32 96l384 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-96 0-7.2-14.3C307.4 6.8 296.3 0 284.2 0L163.8 0c-12.1 0-23.2 6.8-28.6 17.7zM416 128L32 128 53.2 467c1.6 25.3 22.6 45 47.9 45l245.8 0c25.3 0 46.3-19.7 47.9-45L416 128z"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="absolute right-5 bottom-5" v-if="copyToast">
+            <div id="toast-default" class="flex items-center w-full max-w-xs p-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800" role="alert">
+                <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-blue-500 bg-blue-100 rounded-lg dark:bg-blue-800 dark:text-blue-200">
+                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z"/></svg>
+                </div>
+                <div class="ms-3 text-sm font-normal">{{ copyToast }}</div>
+                <button @click.prevent="copyToast = ''" type="button" class="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700" data-dismiss-target="#toast-default" aria-label="Close">
+                    <span class="sr-only">Close</span>
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { createApp, ref, watch, computed } from 'vue'
+
+    createApp({
+        setup() {
+            const minSize = 0;
+            const maxSize = 8400;
+            const selectedOptions = {"1400": "Desktop", "320": "Mobile", "-1": "Other"}
+            const savedSettings = localStorage.getItem("viewportCalc") ? JSON.parse(localStorage.getItem("viewportCalc")) : null;
+            console.log(savedSettings);
+            const settings = ref(savedSettings ?? {"1400": {}, "320": {}})
+            console.log(settings.value);
+            const selectedScreenWidth = ref("1400");
+            const inputScreenWidth = ref("1400");
+            const currentScreenWidth = computed(() => selectedScreenWidth.value === "-1" ? inputScreenWidth.value : selectedScreenWidth.value);
+
+            const inputSize = ref("");
+            const resultSize = ref(0);
+            const resultMobile = ref(0);
+            const resultDesktop = ref(0);
+            const isCopyVW = ref(true);
+            const copyToast = ref('');
+
+            const save = () => {
+                if (!settings.value[currentScreenWidth.value]) {
+                    settings.value[currentScreenWidth.value] = {};
+                }
+                settings.value[currentScreenWidth.value][inputSize.value.toString()] = resultSize.value.toString();
+                console.log(settings.value);
+                saveLocalSettings();
+                inputSize.value = "";
+            }
+
+            const deleteSetting = (size) => {
+                if (settings.value[currentScreenWidth.value][size] === undefined) {
+                    return
+                }
+                delete settings.value[currentScreenWidth.value][size];
+                saveLocalSettings();
+            }
+
+            const saveLocalSettings = () => localStorage.setItem("viewportCalc", JSON.stringify(settings.value));
+
+            const canSaved = computed(() => {
+                if (!inputSize.value) {
+                    return false;
+                }
+                return !(settings.value[currentScreenWidth.value.toString()] && settings.value[currentScreenWidth.value.toString()][inputSize.value.toString()])
+            });
+
+            const clearInputSize = (size) => {
+                size = size.toString().replace(/[^\d.-]/g, '');
+                if (inputSize.value === '') {
+                    return 0;
+                }
+                if (inputSize.value < minSize) {
+                    return minSize;
+                }
+                if (inputSize.value > maxSize) {
+                    return maxSize;
+                }
+                return size;
+            }
+
+            const calcSize = (size, screenWidth) => {
+                return Number.parseFloat(size * 100 / screenWidth).toFixed(2);
+            }
+
+            watch(inputSize, (value, oldValue) => {
+                inputSize.value = clearInputSize(inputSize.value);
+                resultSize.value = calcSize(inputSize.value, currentScreenWidth.value);
+                resultMobile.value = calcSize(inputSize.value, 320);
+                resultDesktop.value = calcSize(inputSize.value, 1400);
+            });
+
+            watch(currentScreenWidth, (value, oldValue) => {
+                inputSize.value = clearInputSize(inputSize.value);
+                resultSize.value = calcSize(inputSize.value, currentScreenWidth.value);
+                resultMobile.value = calcSize(inputSize.value, 320);
+                resultDesktop.value = calcSize(inputSize.value, 1400);
+            });
+
+            const copy = (text) => {
+                if (isCopyVW.value) {
+                    text = text + 'vw';
+                }
+                navigator.clipboard.writeText(text).then(function() {
+                    console.log('Async: Copying to clipboard was successful!');
+                    copyToast.value = `Value ${text} copied!`;
+                    setTimeout(() => copyToast.value = '', 3000);
+                }, function(err) {
+                    console.error('Async: Could not copy text: ', err);
+                    copyToast.value = `Could not copy text ${text}: ` + err.toString();
+                    setTimeout(() => copyToast.value = '', 10000);
+                });
+            }
+
+            return {
+                minSize, maxSize, selectedOptions, savedSettings, selectedScreenWidth, inputScreenWidth, currentScreenWidth, inputSize, resultSize, resultMobile, resultDesktop, save, canSaved, settings, deleteSetting, copy, isCopyVW, copyToast
+            }
+        }
+    }).mount('#app')
+</script>
+</body>
